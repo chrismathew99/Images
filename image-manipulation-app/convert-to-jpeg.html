@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert JPG to JPEG</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <h1>Convert JPG to JPEG</h1>
+    <input type="file" id="fileInput" accept="image/jpg">
+    <button id="convertButton">Convert and Download</button>
+
+    <script src="scripts/imageManipulation.js"></script>
+    <script>
+        document.getElementById('convertButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            if(fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                convertJPGtoJPEG(file).then(jpegFile => {
+                    downloadFile(jpegFile, 'image/jpeg', 'converted-image.jpeg');
+                });
+            } else {
+                alert('Please select a JPG file to convert.');
+            }
+        });
+
+        function convertJPGtoJPEG(file) {
+            // Simple logic to simulate conversion (placeholder)
+            // In actual implementation, this would involve more complex logic
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    // This simulates the conversion process
+                    const base64 = reader.result.replace('data:image/jpg;base64,', 'data:image/jpeg;base64,');
+                    resolve(dataURLtoBlob(base64));
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function downloadFile(blob, type, filename) {
+            // Create a URL for the blob
+            const url = URL.createObjectURL(blob);
+            // Create a link, set its href and download attributes, and click it to start download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            // Cleanup
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+    </script>
+</body>
+</html>
